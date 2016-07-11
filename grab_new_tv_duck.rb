@@ -25,14 +25,14 @@ tv_shows = `duck -l sftp://#{username}:#{password}@#{host}#{remote_tv_dir}`.spli
 tv_shows.each do |show|
   if show.end_with? ".mkv"
     @new_tv_shows << show
-    puts "adding #{show} to the array"
   end
 end
-
+binding.pry
 # Determine tv_shows to download
 to_download = @new_tv_shows - @downloaded_tv
 
 until @new_tv_shows - @downloaded_tv == []
+  puts "Will download the following shows #{to_download}"
   to_download.each do |show|
     puts "downloading #{show} to #{local_tv_dir}"
     # if the show downloads, add the show to the downloaded_show hash; overwrite file if it exists already; surpress progress output

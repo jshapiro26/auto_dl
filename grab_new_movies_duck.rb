@@ -25,7 +25,6 @@ movies = `duck -l sftp://#{username}:#{password}@#{host}#{remote_movie_dir}`.spl
 movies.each do |movie|
   if movie.end_with? ".mkv"
     @new_movies << movie
-    puts "adding #{movie} to the array"
   end
 end
 
@@ -33,6 +32,7 @@ end
 to_download = @new_movies - @downloaded_movies
 
 until @new_movies - @downloaded_movies == []
+  puts "Will download the following shows #{to_download}"
   to_download.each do |movie|
     puts "downloading #{movie} to #{local_movie_dir}"
     # if the movie downloads, add the movie to the downloaded_movie hash; overwrite file if it exists already; surpress progress output
