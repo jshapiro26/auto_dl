@@ -23,7 +23,7 @@ username = ENV['USERNAME']
 password = ENV['PASSWORD']
 
 # Get list of shows in directory
-tv_shows = `duck -l sftp://#{username}:#{password}@#{host}#{remote_tv_dir}`.split
+tv_shows = `/usr/local/bin/duck -l sftp://#{username}:#{password}@#{host}#{remote_tv_dir}`.split
 @new_tv_shows = []
 tv_shows.each do |show|
   if show.end_with? ".mkv"
@@ -39,11 +39,11 @@ until @new_tv_shows - @downloaded_tv == []
   to_download.each do |show|
     puts "downloading #{show} to #{local_tv_dir}"
     # if the show downloads, add the show to the downloaded_show hash; overwrite file if it exists already; surpress progress output
-    if system("duck -q -e overwrite -d sftp://#{username}:#{password}@#{host}#{remote_tv_dir}" + show + " " + local_tv_dir)
+    if system("/usr/local/bin/duck -q -e overwrite -d sftp://#{username}:#{password}@#{host}#{remote_tv_dir}" + show + " " + local_tv_dir)
       puts "The show: #{show} downloaded successfully"
       @downloaded_tv << show
       # delete file from server
-      if system("duck -D sftp://#{username}:#{password}@#{host}#{remote_tv_dir}" + show)
+      if system("/usr/local/bin/duck -D sftp://#{username}:#{password}@#{host}#{remote_tv_dir}" + show)
         puts "#{show} was deleted from the remote server"
       else
         puts "#{show} failed to be deleted from the remote server"
