@@ -2,6 +2,7 @@ require 'net/sftp'
 require 'pry-nav'
 require 'yaml'
 require 'dotenv'
+require_relative 'DownloadProgress'
 Dotenv.load
 
 # Load list of movies already downlaoded; if the list doesn't exist create an empty array
@@ -34,11 +35,11 @@ Net::SFTP.start(host, username, :password => password ) do |sftp|
   until @movies - @downloaded_movies == []
     to_download.each do |movie|
       # if the movie downloads, add the movie to the downloaded_movie hash
-      if sftp.download!(remote_movie_dir + movie, local_movie_dir + movie)
+      if sftp.download!(remote_movie_dir + movie, local_movie_dir + movie, :read_size => 65536, :progress => DownloadProgress.new)
         @downloaded_movies << movie
         # delete file from server
       else
-        puts "there was a problem downlading #{movie}"
+        puts "there was a problem downloading #{movie}"
       end
     end
     puts "all up-to-date"
