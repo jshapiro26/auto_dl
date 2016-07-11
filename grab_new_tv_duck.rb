@@ -23,7 +23,6 @@ else
   @downloaded_tv = []
 end
 
-binding.pry
 # Get list of shows in directory
 tv_shows = `/usr/local/bin/duck -l sftp://#{username}:#{password}@#{host}#{remote_tv_dir}`.split
 @new_tv_shows = []
