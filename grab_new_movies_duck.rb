@@ -35,7 +35,7 @@ end
 to_download = @new_movies - @downloaded_movies
 
 until @new_movies - @downloaded_movies == []
-  puts "Will download the following shows #{to_download}"
+  puts "Will download the following movies #{to_download}"
   to_download.each do |movie|
     puts "downloading #{movie} to #{local_movie_dir}"
     # if the movie downloads, add the movie to the downloaded_movie hash; overwrite file if it exists already; surpress progress output
