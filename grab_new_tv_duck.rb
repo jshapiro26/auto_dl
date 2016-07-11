@@ -5,6 +5,9 @@ require 'dotenv'
 require_relative 'DownloadProgress'
 Dotenv.load
 
+start = Time.now
+puts "Started script at #{start}"
+
 # Load list of tv_shows already downlaoded; if the list doesn't exist create an empty array
 if File.exist?('downloaded_tv.yaml')
   @downloaded_tv = YAML.load_file('downloaded_tv.yaml')
@@ -56,3 +59,6 @@ end
 File.open('downloaded_tv.yaml', "w+") do |file|
   file.write(@downloaded_tv.to_yaml)
 end
+
+finish = Time.now
+puts "Finished script at #{finish}. Took #{finish - start} to complete"
