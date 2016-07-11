@@ -17,7 +17,6 @@ host = ENV['HOST']
 username = ENV['USERNAME']
 password = ENV['PASSWORD']
 
-binding.pry
 Net::SFTP.start(host, username, :password => password ) do |sftp|
   # List items in Movies directory; add to array
   @movies = []
