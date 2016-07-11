@@ -1,5 +1,4 @@
 #### Rewrite for duck.sh
-require 'net/sftp'
 require 'pry-nav'
 require 'yaml'
 require 'dotenv'
@@ -12,6 +11,7 @@ if File.exist?('downloaded_movies.yaml')
 else
   @downlaoded_movies = []
 end
+
 # Set vars from .env
 remote_movie_dir = ENV['REMOTE_MOVIE_DIR']
 local_movie_dir = ENV['LOCAL_MOVIE_DIR']
@@ -29,16 +29,12 @@ movies.each do |movie|
   end
 end
 
-if @new_movies == []
-  puts "The Movie directory is empty, nothing to download"
-  exit 1
-end
-
-# Determine movies to download
+# Determine Movies to download
 to_download = @new_movies - @downloaded_movies
 
 until @new_movies - @downloaded_movies == []
   to_download.each do |movie|
+    puts "downloading #{movie} to #{local_movie_dir}"
     # if the movie downloads, add the movie to the downloaded_movie hash; overwrite file if it exists already; surpress progress output
     if system("duck -q -e overwrite -d sftp://#{username}:#{password}@#{host}#{remote_movie_dir}" + movie + " " + local_movie_dir)
       puts "The Movie: #{movie} downloaded successfully"
@@ -51,7 +47,6 @@ until @new_movies - @downloaded_movies == []
       end
     else
       puts "there was a problem downloading #{movie}"
-      exit 1
     end
   end
   puts "all up-to-date"
@@ -61,4 +56,3 @@ end
 File.open('downloaded_movies.yaml', "w+") do |file|
   file.write(@downloaded_movies.to_yaml)
 end
-
