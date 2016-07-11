@@ -30,7 +30,7 @@ tv_shows.each do |show|
     @new_tv_shows << show
   end
 end
-binding.pry
+
 # Determine tv_shows to download
 to_download = @new_tv_shows - @downloaded_tv
 
