@@ -8,20 +8,22 @@ Dotenv.load
 start = Time.now
 puts "Started script at #{start}"
 
-# Load list of tv_shows already downlaoded; if the list doesn't exist create an empty array
-if File.exist?('downloaded_tv.yaml')
-  @downloaded_tv = YAML.load_file('downloaded_tv.yaml')
-else
-  @downloaded_tv = []
-end
-
 # Set vars from .env
 remote_tv_dir = ENV['REMOTE_TV_DIR']
 local_tv_dir = ENV['LOCAL_TV_DIR']
 host = ENV['HOST']
 username = ENV['USERNAME']
 password = ENV['PASSWORD']
+home_dir = ENV['HOME_DIR']
 
+# Load list of tv_shows already downlaoded; if the list doesn't exist create an empty array
+if File.exist?(home_dir + 'downloaded_tv.yaml')
+  @downloaded_tv = YAML.load_file(home_dir +'downloaded_tv.yaml')
+else
+  @downloaded_tv = []
+end
+
+binding.pry
 # Get list of shows in directory
 tv_shows = `/usr/local/bin/duck -l sftp://#{username}:#{password}@#{host}#{remote_tv_dir}`.split
 @new_tv_shows = []
@@ -56,7 +58,7 @@ until @new_tv_shows - @downloaded_tv == []
 end
 
 # Overwrite list of downloaded tv_shows with updated array
-File.open('downloaded_tv.yaml', "w+") do |file|
+File.open(home_dir + 'downloaded_tv.yaml', "w+") do |file|
   file.write(@downloaded_tv.to_yaml)
 end
 
