@@ -5,6 +5,16 @@ require 'dotenv'
 require_relative 'DownloadProgress'
 Dotenv.load
 
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = Encoding::UTF_8
+
+# Set vars from .env
+remote_movie_dir = ENV['REMOTE_MOVIE_DIR']
+local_movie_dir = ENV['LOCAL_MOVIE_DIR']
+host = ENV['HOST']
+username = ENV['USERNAME']
+password = ENV['PASSWORD']
+
 start = Time.now
 puts "Started script at #{start}"
 
@@ -14,13 +24,6 @@ if File.exist?('downloaded_movies.yaml')
 else
   @downlaoded_movies = []
 end
-
-# Set vars from .env
-remote_movie_dir = ENV['REMOTE_MOVIE_DIR']
-local_movie_dir = ENV['LOCAL_MOVIE_DIR']
-host = ENV['HOST']
-username = ENV['USERNAME']
-password = ENV['PASSWORD']
 
 # Get list of movies in directory
 movies = `/usr/local/bin/duck -l sftp://#{username}:#{password}@#{host}#{remote_movie_dir}`.split
