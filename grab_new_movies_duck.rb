@@ -42,7 +42,7 @@ until @new_movies - @downloaded_movies == []
   to_download.each do |movie|
     puts "downloading #{movie} to #{local_movie_dir}"
     # if the movie downloads, add the movie to the downloaded_movie hash; overwrite file if it exists already; surpress progress output
-    if system("/usr/local/bin/duck -e overwrite -d sftp://#{username}:#{password}@#{host}#{remote_movie_dir}" + movie + " " + local_movie_dir)
+    if system("/usr/local/bin/duck -q -e overwrite -d sftp://#{username}:#{password}@#{host}#{remote_movie_dir}" + movie + " " + local_movie_dir)
       puts "The Movie: #{movie} downloaded successfully"
       @downloaded_movies << movie
       # delete file from server

@@ -42,7 +42,7 @@ until @new_tv_shows - @downloaded_tv == []
   to_download.each do |show|
     puts "downloading #{show} to #{local_tv_dir}"
     # if the show downloads, add the show to the downloaded_show hash; overwrite file if it exists already; surpress progress output
-    if system("/usr/local/bin/duck -e overwrite -d sftp://#{username}:#{password}@#{host}#{remote_tv_dir}" + show + " " + local_tv_dir)
+    if system("/usr/local/bin/duck -q -e overwrite -d sftp://#{username}:#{password}@#{host}#{remote_tv_dir}" + show + " " + local_tv_dir)
       puts "The show: #{show} downloaded successfully"
       @downloaded_tv << show
       # delete file from server
