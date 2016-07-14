@@ -2,7 +2,9 @@
 require 'pry-nav'
 require 'yaml'
 require 'dotenv'
-require_relative 'DownloadProgress'
+require 'sendgrid-ruby'
+include SendGrid
+
 Dotenv.load
 
 Encoding.default_external = Encoding::UTF_8
@@ -28,6 +30,17 @@ local_tv_dir = ENV['LOCAL_TV_DIR']
 host = ENV['HOST']
 username = ENV['USERNAME']
 password = ENV['PASSWORD']
+sg_key = ENV['SENDGRID_API_KEY']
+
+def send_mail(show,status)
+  from = Email.new(email: 'plex_notify@tokimonsta.com')
+  subject = "TV Show Download #{status}"
+  to = Email.new(email: 'jeremynshapiro@gmail.com')
+  content = Content.new(type: 'text/plain', value: "#{show} was processed @ #{Time.now} with status of #{status}")
+  mail = Mail.new(from, subject, to, content)
+  sg = SendGrid::API.new(api_key: sg_key)
+  response = sg.client.mail._('send').post(request_body: mail.to_json)
+end
 
 # Load list of tv_shows already downlaoded; if the list doesn't exist create an empty array
 if File.exist?('downloaded_tv.yaml')
@@ -56,14 +69,22 @@ until @new_tv_shows - @downloaded_tv == []
     if system("/usr/local/bin/duck -q -e overwrite -d sftp://#{username}:#{password}@#{host}#{remote_tv_dir}" + show + " " + local_tv_dir)
       puts "The show: #{show} downloaded successfully"
       @downloaded_tv << show
+      # send success email
+      send_mail(show,"Success")
       # delete file from server
       if system("/usr/local/bin/duck -D sftp://#{username}:#{password}@#{host}#{remote_tv_dir}" + show)
         puts "#{show} was deleted from the remote server"
       else
         puts "#{show} failed to be deleted from the remote server"
+        # send failure to delete email
+        send_mail(show,"Failure to delete")
       end
     else
       puts "there was a problem downloading #{show}"
+      # remove failed show from array of to be downloaded to prevent endless loop
+      @new_tv_shows = @new_tv_shows - show
+      # send general error email
+      send_mail(show,"Error")
     end
   end
   puts "all up-to-date"
