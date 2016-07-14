@@ -19,6 +19,7 @@ if File.exist?('downloading_movies.lock')
   exit 0
 else
   File.open('downloading_movies.lock', "w+")
+  puts "Created lockfile"
 end
 
 # Set vars from .env
