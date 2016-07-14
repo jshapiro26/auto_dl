@@ -32,7 +32,7 @@ username = ENV['USERNAME']
 password = ENV['PASSWORD']
 
 def send_mail(movie,status)
-  from = Email.new(email: 'plex_notify@tokimonsta.com')
+  from = Email.new(email: 'plex_notify@tokimonsta.net')
   subject = "Movie Download #{status}"
   to = Email.new(email: ENV['EMAIL_TO'])
   content = Content.new(type: 'text/plain', value: "#{movie} was processed @ #{Time.now} with status of #{status}")
