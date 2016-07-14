@@ -30,15 +30,15 @@ local_tv_dir = ENV['LOCAL_TV_DIR']
 host = ENV['HOST']
 username = ENV['USERNAME']
 password = ENV['PASSWORD']
-sg_key = ENV['SENDGRID_API_KEY']
 
 def send_mail(show,status)
   from = Email.new(email: 'plex_notify@tokimonsta.com')
   subject = "TV Show Download #{status}"
-  to = Email.new(email: 'jeremynshapiro@gmail.com')
+  to = Email.new(email: ENV['EMAIL_TO'])
+  cc = Email.new(email: ENV['EMAIL_CC'])
   content = Content.new(type: 'text/plain', value: "#{show} was processed @ #{Time.now} with status of #{status}")
   mail = Mail.new(from, subject, to, content)
-  sg = SendGrid::API.new(api_key: sg_key)
+  sg = SendGrid::API.new(api_key: ENV['SENDGRID_API_KEY'])
   response = sg.client.mail._('send').post(request_body: mail.to_json)
 end
 
