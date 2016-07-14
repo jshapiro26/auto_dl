@@ -11,6 +11,16 @@ Encoding.default_internal = Encoding::UTF_8
 start = Time.now
 puts "Started script at #{start}"
 
+# Create lock file to prevent race conditions
+if File.exist?('downloading_tv.lock')
+  puts "TV shows are currently downloading, skipping run."
+  finish = Time.now
+  puts "Finished script at #{finish}. Took #{finish - start} to complete"
+  exit 0
+else
+  File.open('downloading_tv.lock', "w+")
+end
+
 # Set vars from .env
 remote_tv_dir = ENV['REMOTE_TV_DIR']
 local_tv_dir = ENV['LOCAL_TV_DIR']
@@ -61,6 +71,11 @@ end
 # Overwrite list of downloaded tv_shows with updated array
 File.open('downloaded_tv.yaml', "w+") do |file|
   file.write(@downloaded_tv.to_yaml)
+end
+
+if File.exist?('downloading_tv.lock')
+  File.delete('downloading_tv.lock')
+  puts "Deleted lockfile"
 end
 
 finish = Time.now

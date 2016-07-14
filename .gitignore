@@ -1,3 +1,5 @@
 .env
 *.yaml
 *.log
+downloading_movies.lock
+downloading_tv.lock

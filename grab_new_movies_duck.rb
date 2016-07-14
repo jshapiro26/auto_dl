@@ -8,15 +8,25 @@ Dotenv.load
 Encoding.default_external = Encoding::UTF_8
 Encoding.default_internal = Encoding::UTF_8
 
+start = Time.now
+puts "Started script at #{start}"
+
+# Create lock file to prevent race conditions
+if File.exist?('downloading_movies.lock')
+  puts "Movies are currently downloading, skipping run."
+  finish = Time.now
+  puts "Finished script at #{finish}. Took #{finish - start} to complete"
+  exit 0
+else
+  File.open('downloading_movies.lock', "w+")
+end
+
 # Set vars from .env
 remote_movie_dir = ENV['REMOTE_MOVIE_DIR']
 local_movie_dir = ENV['LOCAL_MOVIE_DIR']
 host = ENV['HOST']
 username = ENV['USERNAME']
 password = ENV['PASSWORD']
-
-start = Time.now
-puts "Started script at #{start}"
 
 # Load list of movies already downlaoded; if the list doesn't exist create an empty array
 if File.exist?('downloaded_movies.yaml')
@@ -61,6 +71,11 @@ end
 # Overwrite list of downloaded movies with updated array
 File.open('downloaded_movies.yaml', "w+") do |file|
   file.write(@downloaded_movies.to_yaml)
+end
+
+if File.exist?('downloading_movies.lock')
+  File.delete('downloading_movies.lock')
+  puts "Deleted lockfile"
 end
 
 finish = Time.now
