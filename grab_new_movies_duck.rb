@@ -69,21 +69,21 @@ until @new_movies - @downloaded_movies == []
       puts "The Movie: #{movie} downloaded successfully"
       @downloaded_movies << movie
       # send success email
-      send_mail(show,"Success")
+      send_mail(movie,"Success")
       # delete file from server
       if system("/usr/local/bin/duck -D sftp://#{username}:#{password}@#{host}#{remote_movie_dir}" + movie)
         puts "#{movie} was deleted from the remote server"
       else
         puts "#{movie} failed to be deleted from the remote server"
         # send failure to delete email
-        send_mail(show,"Failure to delete")
+        send_mail(movie,"Failure to delete")
       end
     else
       puts "there was a problem downloading #{movie}"
-      # remove failed show from array of to be downloaded to prevent endless loop
+      # remove failed movie from array of to be downloaded to prevent endless loop
       @new_movies = @new_movies - movie
       # send general error email
-      send_mail(show,"Error")
+      send_mail(movie,"Error")
     end
   end
   puts "all up-to-date"
