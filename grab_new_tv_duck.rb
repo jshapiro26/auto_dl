@@ -27,6 +27,7 @@ end
 # Set vars from .env
 remote_tv_dir = ENV['REMOTE_TV_DIR']
 local_tv_dir = ENV['LOCAL_TV_DIR']
+post_process_dir = ENV['POST_PROCESS_DIR']
 host = ENV['HOST']
 username = ENV['USERNAME']
 password = ENV['PASSWORD']
@@ -88,6 +89,11 @@ until @new_tv_shows - @downloaded_tv == []
     end
   end
   puts "all up-to-date"
+end
+
+# Move shows to post processing directory
+if system("/bin/mv #{local_tv_dir}* #{post_process_dir}")
+  puts "TV shows moved to post processing directory: #{post_process_dir}"
 end
 
 # Overwrite list of downloaded tv_shows with updated array
