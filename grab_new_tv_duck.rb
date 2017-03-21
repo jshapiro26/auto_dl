@@ -80,6 +80,10 @@ until @new_tv_shows - @downloaded_tv == []
         # send failure to delete email
         send_slack(show,"Failed to delete")
       end
+      # Move shows to post processing directory
+      if system("/bin/mv #{local_tv_dir}#{show} #{post_process_dir}")
+        puts "#{show} moved to post processing directory: #{post_process_dir}"
+      end
     else
       puts "there was a problem downloading #{show}"
       # remove failed show from array of to be downloaded to prevent endless loop
@@ -91,10 +95,7 @@ until @new_tv_shows - @downloaded_tv == []
   puts "all up-to-date"
 end
 
-# Move shows to post processing directory
-if system("/bin/mv #{local_tv_dir}* #{post_process_dir}")
-  puts "TV shows moved to post processing directory: #{post_process_dir}"
-end
+
 
 # Overwrite list of downloaded tv_shows with updated array
 File.open('downloaded_tv.yaml', "w+") do |file|
