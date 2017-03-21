@@ -2,8 +2,8 @@
 require 'pry-nav'
 require 'yaml'
 require 'dotenv'
-require 'sendgrid-ruby'
-include SendGrid
+require 'httparty'
+include HTTParty
 
 Dotenv.load
 
@@ -31,14 +31,13 @@ host = ENV['HOST']
 username = ENV['USERNAME']
 password = ENV['PASSWORD']
 
-def send_mail(show,status)
-  from = Email.new(email: 'plex_notify@tokimonsta.net')
-  subject = "TV Show Download #{status}"
-  to = Email.new(email: ENV['EMAIL_TO'])
-  content = Content.new(type: 'text/plain', value: "#{show} was processed @ #{Time.now} with status of #{status}")
-  mail = Mail.new(from, subject, to, content)
-  sg = SendGrid::API.new(api_key: ENV['SENDGRID_API_KEY'])
-  response = sg.client.mail._('send').post(request_body: mail.to_json)
+# Send Slack
+def send_slack(show,status)
+  @response = HTTParty.post(ENV['SLACK_WEBHOOK_URL'],
+    {
+      :body => "payload={'username': 'SeedBoxDL', 'text': '#{show} completed with status: #{status}', 'icon_emoji': ':metal:'}"
+    }
+  )
 end
 
 # Load list of tv_shows already downlaoded; if the list doesn't exist create an empty array
@@ -49,11 +48,13 @@ else
 end
 
 # Get list of shows in directory
-tv_shows = `/usr/local/bin/duck -l sftp://#{username}:#{password}@#{host}#{remote_tv_dir}`.split
+tv_shows = `/usr/local/bin/duck -l sftp://#{username}:#{password}@#{host}#{remote_tv_dir}`.gsub("\n", "  ").gsub(/(\r).*( successful...)/, "").split("  ")
 @new_tv_shows = []
 tv_shows.each do |show|
   if show.end_with? ".mkv"
     @new_tv_shows << show
+  else
+    @new_tv_shows << show + "/"
   end
 end
 
@@ -65,25 +66,25 @@ until @new_tv_shows - @downloaded_tv == []
   to_download.each do |show|
     puts "downloading #{show} to #{local_tv_dir}"
     # if the show downloads, add the show to the downloaded_show hash; overwrite file if it exists already; surpress progress output
-    if system("/usr/local/bin/duck -q -e overwrite -d sftp://#{username}:#{password}@#{host}#{remote_tv_dir}" + show + " " + local_tv_dir)
+    if system("/usr/local/bin/duck -q -e overwrite -r 2 -d sftp://#{username}:#{password}@#{host}#{remote_tv_dir}" + show + " " + local_tv_dir)
       puts "The show: #{show} downloaded successfully"
       @downloaded_tv << show
       # send success email
-      send_mail(show,"Success")
+      send_slack(show,"Downloaded Successfully")
       # delete file from server
       if system("/usr/local/bin/duck -D sftp://#{username}:#{password}@#{host}#{remote_tv_dir}" + show)
         puts "#{show} was deleted from the remote server"
       else
         puts "#{show} failed to be deleted from the remote server"
         # send failure to delete email
-        send_mail(show,"Failure to delete")
+        send_slack(show,"Failed to delete")
       end
     else
       puts "there was a problem downloading #{show}"
       # remove failed show from array of to be downloaded to prevent endless loop
       @new_tv_shows = @new_tv_shows - show
       # send general error email
-      send_mail(show,"Error")
+      send_slack(show,"Error")
     end
   end
   puts "all up-to-date"
