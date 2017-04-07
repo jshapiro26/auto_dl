@@ -23,9 +23,10 @@ if [ ! -f $LOCK_FILE ]; then
   # Post to Slack on success/fail of download
   if [ $RESULT -eq 0 ] && [ -n "$FILES" ]; then
     for FILE in $FILES
+    do
       /bin/mv $TEMP_DIR$FILE $POST_PROCESS_DIR
     done
-      /bin/curl -X POST --data-urlencode "payload={'text': 'The following files have been downloaded locally, removed from the remote host and moved into the post processing directory: ${FILES}'}" $SLACK_ENDPOINT
+    /bin/curl -X POST --data-urlencode "payload={'text': 'The following files have been downloaded locally, removed from the remote host and moved into the post processing directory: ${FILES}'}" $SLACK_ENDPOINT
   elif [ $RESULT -ge 1 ] && [ -n "$FILES" ]; then
     /bin/curl -X POST --data-urlencode "payload={'text': 'The following files failed to download locally: ${FILES}'}" $SLACK_ENDPOINT
   fi
