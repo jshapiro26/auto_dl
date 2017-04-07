@@ -14,7 +14,7 @@ SLACK_ENDPOINT=
 if [ ! -f $LOCK_FILE ]; then
   /bin/touch $LOCK_FILE
   # save list of files to be downloaded
-  FILES=$(rclone ls $REMOTE_HOST_NAME:$REMOTE_HOST_PATH)
+  FILES=$(/usr/local/bin/rclone lsd $REMOTE_HOST_NAME:$REMOTE_HOST_PATH | awk '{print $5}')
   # echo files into lockfile to view whats being downloaded easily
   /bin/echo $FILES > $LOCK_FILE
   # Download files
@@ -22,8 +22,10 @@ if [ ! -f $LOCK_FILE ]; then
   RESULT=$?
   # Post to Slack on success/fail of download
   if [ $RESULT -eq 0 ] && [ -n "$FILES" ]; then
-    /bin/mv $TEMP_DIR* $POST_PROCESS_DIR
-    /bin/curl -X POST --data-urlencode "payload={'text': 'The following files have been downloaded locally, removed from the remote host and moved into the post processing directory: ${FILES}'}" $SLACK_ENDPOINT
+    for FILE in $FILES
+      /bin/mv $TEMP_DIR$FILE $POST_PROCESS_DIR
+    done
+      /bin/curl -X POST --data-urlencode "payload={'text': 'The following files have been downloaded locally, removed from the remote host and moved into the post processing directory: ${FILES}'}" $SLACK_ENDPOINT
   elif [ $RESULT -ge 1 ] && [ -n "$FILES" ]; then
     /bin/curl -X POST --data-urlencode "payload={'text': 'The following files failed to download locally: ${FILES}'}" $SLACK_ENDPOINT
   fi
