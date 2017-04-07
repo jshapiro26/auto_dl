@@ -21,10 +21,10 @@ if [ ! -f $LOCK_FILE ]; then
   /usr/local/bin/rclone moveto -v $REMOTE_HOST_NAME:$REMOTE_HOST_PATH $LOCAL_HOST_NAME:$TEMP_DIR
   RESULT=$?
   # Post to Slack on success/fail of download
-  if [ $RESULT -eq 0 ] && [ ! -z "$FILES" ]; then
+  if [ $RESULT -eq 0 ] && [ -n "$FILES" ]; then
     /bin/mv $TEMP_DIR* $POST_PROCESS_DIR
     /bin/curl -X POST --data-urlencode "payload={'text': 'The following files have been downloaded locally, removed from the remote host and moved into the post processing directory: ${FILES}'}" $SLACK_ENDPOINT
-  elif [ $RESULT ! -eq 0 ] && [ ! -z "$FILES" ]; then
+  elif [ $RESULT -ge 1 ] && [ -n "$FILES" ]; then
     /bin/curl -X POST --data-urlencode "payload={'text': 'The following files failed to download locally: ${FILES}'}" $SLACK_ENDPOINT
   fi
   # remove lock file when done running
