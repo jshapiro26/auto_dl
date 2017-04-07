@@ -11,7 +11,7 @@ POST_PROCESS_DIR=
 TEMP_DIR=
 SLACK_ENDPOINT=
 # if lockfile is not present create lock file and run logic
-if [ ! -f "$LOCK_FILE"]; then
+if [ ! -f $LOCK_FILE ]; then
   /bin/touch $LOCK_FILE
   # save list of files to be downloaded
   FILES=$(rclone ls $REMOTE_HOST_NAME:$REMOTE_HOST_PATH)
@@ -20,9 +20,9 @@ if [ ! -f "$LOCK_FILE"]; then
   # Post to Slack on success/fail of download
   if [ /usr/local/bin/rclone move -v $REMOTE_HOST_NAME:$REMOTE_HOST_PATH $LOCAL_HOST_NAME:$TEMP_DIR ]; then
     /bin/mv $TEMP_DIR* $POST_PROCESS_DIR
-    /bin/curl -X POST --data-urlencode "payload={"text": "The following files have been downloaded locally, removed from the remote host and moved into the post processing directory: ${FILES}"}" $SLACK_ENDPOINT
+    /bin/curl -X POST --data-urlencode 'payload={"text": "The following files have been downloaded locally, removed from the remote host and moved into the post processing directory: ${FILES}"}' $SLACK_ENDPOINT
   else
-    /bin/curl -X POST --data-urlencode "payload={"text": "The following files failed to download locally: ${FILES}"}" $SLACK_ENDPOINT
+    /bin/curl -X POST --data-urlencode 'payload={"text": "The following files failed to download locally: ${FILES}"}' $SLACK_ENDPOINT
   fi
   # remove lock file when done running
   /bin/rm -f $LOCK_FILE
