@@ -16,9 +16,18 @@ if [ ! -f $LOCK_FILE ]; then
   # save list of directories and files to be downloaded
   DIRS=$(/usr/local/bin/rclone lsd $REMOTE_HOST_NAME:$REMOTE_HOST_PATH | awk '{print $5}')
   FILES=$(/usr/local/bin/rclone ls $REMOTE_HOST_NAME:$REMOTE_HOST_PATH --include "/*.mkv" | awk '{print $2}')
-  ALL_FILES=${DIRS}'\n'${FILES}
+  # Determine if nothing, files, directories or both will be downloaded
+  if [ -z "$DIRS" ] && [ -z "$FILES" ]; then
+    ALL_FILES=""
+  elif [ -z "$DIRS" ] && [ -n "$FILES" ]; then
+    ALL_FILES=$FILES
+  elif [ -n "$DIRS" ] && [ -z "$FILES" ]; then
+    ALL_FILES="$DIRS"
+  elif [ -n "$DIRS" ] && [ -n "$FILES" ]; then
+    ALL_FILES=${DIRS}'\n'${FILES}
+  fi
   # echo files into lockfile to view whats being downloaded easily
-  /bin/echo $ALL_FILES > $LOCK_FILE
+  /bin/echo -e $ALL_FILES > $LOCK_FILE
   # Download files
   /usr/local/bin/rclone moveto -v $REMOTE_HOST_NAME:$REMOTE_HOST_PATH $LOCAL_HOST_NAME:$TEMP_DIR
   RESULT=$?
