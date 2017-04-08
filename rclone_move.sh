@@ -24,6 +24,7 @@ if [ ! -f $LOCK_FILE ]; then
   if [ $RESULT -eq 0 ] && [ -n "$FILES" ]; then
     for FILE in $FILES
     do
+      /usr/local/bin/rclone rmdirs $REMOTE_HOST_NAME:$REMOTE_HOST_PATH/$FILE
       /bin/mv $TEMP_DIR$FILE $POST_PROCESS_DIR
     done
     /bin/curl -X POST --data-urlencode "payload={'text': 'The following files have been downloaded locally, removed from the remote host and moved into the post processing directory: ${FILES}'}" $SLACK_ENDPOINT
