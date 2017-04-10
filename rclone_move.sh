@@ -44,10 +44,10 @@ if [ ! -f $LOCK_FILE ]; then
       /usr/local/bin/rclone rmdirs $REMOTE_HOST_NAME:$REMOTE_HOST_PATH/$DIR
     done
     # Post to slack with list of suceeded files
-    /bin/curl -X POST --data-urlencode "payload={'text': 'The following files have been downloaded locally, removed from the remote host and moved into the post processing directory: ${FILES}'}" $SLACK_ENDPOINT
+    /bin/curl -X POST --data-urlencode "payload={'text': 'The following files have been downloaded locally, removed from the remote host and moved into the post processing directory: ${ALL_FILES}'}" $SLACK_ENDPOINT
   # Post to slack on failure
   elif [ $RESULT -ge 1 ] && [ -n "$ALL_FILES" ]; then
-    /bin/curl -X POST --data-urlencode "payload={'text': 'The following files failed to download locally: ${FILES}'}" $SLACK_ENDPOINT
+    /bin/curl -X POST --data-urlencode "payload={'text': 'The following files failed to download locally: ${ALL_FILES}'}" $SLACK_ENDPOINT
   fi
   # remove lock file when done running
   /bin/rm -f $LOCK_FILE
