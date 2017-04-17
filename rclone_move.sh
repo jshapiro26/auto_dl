@@ -23,8 +23,8 @@ fi
 if [ ! -f $LOCK_FILE ]; then
   /bin/touch $LOCK_FILE
   # save list of directories and files to be downloaded
-  DIRS=$(/usr/local/bin/rclone lsd $REMOTE_HOST_NAME:$REMOTE_HOST_PATH | awk '{print $5}')
-  FILES=$(/usr/local/bin/rclone ls $REMOTE_HOST_NAME:$REMOTE_HOST_PATH --include "/*.mkv" | awk '{print $2}')
+  DIRS=$(/usr/local/bin/rclone lsd $REMOTE_HOST_NAME:$REMOTE_HOST_PATH | awk '{print $5}'| tr '\n' ' ')
+  FILES=$(/usr/local/bin/rclone ls $REMOTE_HOST_NAME:$REMOTE_HOST_PATH --include "/*.mkv" | awk '{print $2}'| tr '\n' ' ')
   # Determine if nothing, files, directories or both will be downloaded
   if [ -z "$DIRS" ] && [ -z "$FILES" ]; then
     ALL_FILES=""
@@ -33,7 +33,7 @@ if [ ! -f $LOCK_FILE ]; then
   elif [ -n "$DIRS" ] && [ -z "$FILES" ]; then
     ALL_FILES="$DIRS"
   elif [ -n "$DIRS" ] && [ -n "$FILES" ]; then
-    ALL_FILES=${DIRS}'\n'${FILES}
+    ALL_FILES=${DIRS}' '${FILES}
   fi
   # echo files into lockfile to view whats being downloaded easily
   /bin/echo -e $ALL_FILES > $LOCK_FILE
