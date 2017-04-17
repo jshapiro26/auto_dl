@@ -1,4 +1,5 @@
 .env
+.config
 *.yaml
 *.log
 downloading_movies.lock

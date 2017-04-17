@@ -1,15 +1,24 @@
 #!/bin/bash
 set -e
-# set path to lockfile
-LOCK_FILE=
-# config variables
-# run rclone config to setup your rclone remote and local
-REMOTE_HOST_NAME=
-REMOTE_HOST_PATH=
-LOCAL_HOST_NAME=
-POST_PROCESS_DIR=
-TEMP_DIR=
-SLACK_ENDPOINT=
+###########################################################
+## To watch multiple remote directories, set config vars ##
+## in a file at the same path as the script by copying   ##
+## the config_vars_sample to a name of your choice. End  ##
+## the name with .confg for it to be git-ignored. At run ##
+## of the script, pass the name of your config file      ##
+## as an arg. Otherwise set your config vars below.      ##
+###########################################################
+if [ -n "$1" ]; then
+  source ./$1
+else
+  LOCK_FILE=
+  REMOTE_HOST_NAME=
+  REMOTE_HOST_PATH=
+  LOCAL_HOST_NAME=
+  POST_PROCESS_DIR=
+  TEMP_DIR=
+  SLACK_ENDPOINT=
+fi
 # if lockfile is not present create lock file and run logic
 if [ ! -f $LOCK_FILE ]; then
   /bin/touch $LOCK_FILE

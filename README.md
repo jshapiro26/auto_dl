@@ -13,10 +13,10 @@ Download all files from a remote to local; delete files from remote and post lis
   - Run `rclone config` again to setup your local directory that you'd like to download rclone into.
 - Set your config variables in the script and cron/run.
 
-## grab\_new\_tv_duck.rb
+## download_tv.rb
 Download (SFTP) all Folders and/or `.mkv` files from a remote directory to a local directory. After each file is downloaded, remove from remote, post to slack and move to secondary directory for post processing.
 ### setup
 - Download duck binary for sftp: [https://duck.sh/](https://duck.sh/).
 - Make sure ruby is installed, run `bundle install`,
 - Copy `.env_sample` to `.env` and enter your secrets.
-- Cron or run the script: `ruby grab_new_tv_duck.rb`.
+- Cron or run the script: `ruby download_tv.rb`.
