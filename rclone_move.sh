@@ -38,7 +38,7 @@ if [ ! -f $LOCK_FILE ]; then
   # echo files into lockfile to view whats being downloaded easily
   /bin/echo -e $ALL_FILES > $LOCK_FILE
   # Download files
-  /usr/local/bin/rclone moveto -v $REMOTE_HOST_NAME:$REMOTE_HOST_PATH $LOCAL_HOST_NAME:$TEMP_DIR
+  /usr/local/bin/rclone moveto -v $REMOTE_HOST_NAME:$REMOTE_HOST_PATH $LOCAL_HOST_NAME:$TEMP_DIR --transfers=10
   RESULT=$?
   # Proceed if succeeded to download files
   if [ $RESULT -eq 0 ] && [ -n "$ALL_FILES" ]; then
