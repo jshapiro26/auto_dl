@@ -1,0 +1,9 @@
+# Copy file to name of config file to source from script
+##
+LOCK_FILE="/full/path/to/lockfile.lock"
+REMOTE_HOST_NAME="rclone_config_name" ###remote config name set in rclone
+REMOTE_HOST_PATH="path/on/remote/host" ###do not prepending slash
+LOCAL_HOST_NAME="rclone_config_name" ###local location config name set in rclone
+POST_PROCESS_DIR="/path/to/post/processing/directory/" ###include trailing slash
+TEMP_DIR="/path/to/temporary/download/directory/" ###include trailing slash
+SLACK_ENDPOINT="slack_incoming_webhook_url" ###your incoming webhook url for slack
