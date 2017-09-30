@@ -20,11 +20,11 @@ else
   SLACK_ENDPOINT=
 fi
 # If the lockfile exists, check that files are actually being downloaded
-# by checking the contexts of the file; it will be empty upon a fialed connection.
+# by checking the contexts of the file; it will be empty upon a failed connection.
 if [ -f $LOCK_FILE ]; then
   LOCK_CONTENTS=$(cat $LOCK_FILE)
   if [ -z "$LOCK_CONTENTS" ]; then
-    echo "Script failed previously, removing lockfile to allow script run"
+    echo "Script failed previously, removing lockfile to allow script to run"
     /bin/rm -f $LOCK_FILE
   fi
 fi
