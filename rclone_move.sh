@@ -19,6 +19,15 @@ else
   TEMP_DIR=
   SLACK_ENDPOINT=
 fi
+# If the lockfile exists, check that files are actually being downloaded
+# by checking the contexts of the file; it will be empty upon a fialed connection.
+if [ -f $LOCK_FILE ]; then
+  LOCK_CONTENTS=$(cat $LOCK_FILE)
+  if [ -z "$LOCK_CONTENTS" ]; then
+    echo "Script failed previously, removing lockfile to allow script run"
+    /bin/rm -f $LOCK_FILE
+  fi
+fi
 # if lockfile is not present create lock file and run logic
 if [ ! -f $LOCK_FILE ]; then
   /bin/touch $LOCK_FILE
@@ -59,6 +68,7 @@ if [ ! -f $LOCK_FILE ]; then
     /bin/curl -X POST --data-urlencode "payload={'text': 'The following files failed to download locally: ${ALL_FILES}'}" $SLACK_ENDPOINT
   fi
   # remove lock file when done running
+  echo "Done downloading files, removing lockfile"
   /bin/rm -f $LOCK_FILE
 else
   echo "Files are currently being downloaded, skipping run"
