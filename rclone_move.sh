@@ -32,8 +32,8 @@ fi
 if [ ! -f $LOCK_FILE ]; then
   /bin/touch $LOCK_FILE
   # save list of directories and files to be downloaded
-  DIRS=$(/usr/local/bin/rclone lsd $REMOTE_HOST_NAME:$REMOTE_HOST_PATH | awk '{print $5}'| tr '\n' ' ')
-  FILES=$(/usr/local/bin/rclone ls $REMOTE_HOST_NAME:$REMOTE_HOST_PATH --include "/*.mkv" | awk '{print $2}'| tr '\n' ' ')
+  DIRS=$(/usr/local/bin/rclone lsd $REMOTE_HOST_NAME:$REMOTE_HOST_PATH --fast-list | awk '{print $5}'| tr '\n' ' ')
+  FILES=$(/usr/local/bin/rclone ls $REMOTE_HOST_NAME:$REMOTE_HOST_PATH --fast-list --include "/*.mkv" | awk '{print $2}'| tr '\n' ' ')
   # Determine if nothing, files, directories or both will be downloaded
   if [ -z "$DIRS" ] && [ -z "$FILES" ]; then
     ALL_FILES=""
@@ -47,7 +47,7 @@ if [ ! -f $LOCK_FILE ]; then
   # echo files into lockfile to view whats being downloaded easily
   /bin/echo -e $ALL_FILES > $LOCK_FILE
   # Download files
-  /usr/local/bin/rclone moveto -v $REMOTE_HOST_NAME:$REMOTE_HOST_PATH $LOCAL_HOST_NAME:$TEMP_DIR --transfers=10
+  /usr/local/bin/rclone moveto -v $REMOTE_HOST_NAME:$REMOTE_HOST_PATH $LOCAL_HOST_NAME:$TEMP_DIR --transfers=20 --buffer-size=3G --fast-list
   RESULT=$?
   # Proceed if succeeded to download files
   if [ $RESULT -eq 0 ] && [ -n "$ALL_FILES" ]; then
